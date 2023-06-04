@@ -37,12 +37,12 @@ mongoose
   });
 
 //-------- MIDDLEWARES ---------
-app.use(
-  cors({
-    origin: ["https://fyp-wsscm-system.vercel.app", "http://localhost:3001"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: 'https://fyp-wsscm-system.vercel.app',
+};
+app.use(cors(corsOptions));
+
+
 app.use(helmet());
 app.use(morgan("tiny"));
 app.use(cookieParser());
