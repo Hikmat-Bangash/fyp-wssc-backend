@@ -95,7 +95,8 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         const token = jsonwebtoken_1.default.sign({ id: User._id, name: User.name, phone: User.phone }, SECRET_KEY);
         const _a = User._doc, { password } = _a, detail = __rest(_a, ["password"]);
         res
-            .cookie("access_token", token, {
+            .cookie('access_token', token, {
+            domain: 'fyp-wsscm-system.vercel.app',
             httpOnly: true,
         })
             .status(200)
