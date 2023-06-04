@@ -12,8 +12,8 @@ export const verifyToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const token: any = req.cookies.access_token;
-  console.log(`checking tokein: ${token}`)
+  const token: any = req.cookies.wssc_token;
+ 
   if (!token) return next(createError(401, "You are not authenticated!"));
 
   return new Promise<void>((resolve, reject) => {
@@ -25,13 +25,6 @@ export const verifyToken = async (
     });
   });
 
-  // jwt.verify(token, JWT, (err: jwt.VerifyErrors | null, user: any) => {
-  //     if (err) return next(createError(403, "Token is not valid!"));
-
-  //     req.citizen = user;
-  //     console.log(req.citizen)
-  //     next()
-  // });
 };
 
 // ----- verifyUser before making any request --------

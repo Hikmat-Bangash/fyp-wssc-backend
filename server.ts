@@ -36,14 +36,7 @@ mongoose
     console.log(err);
   });
 
-//-------- MIDDLEWARES ---------
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://fyp-wsscm-system.vercel.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
-});
+
 
 const corsOptions = {
   origin: 'https://fyp-wsscm-system.vercel.app',

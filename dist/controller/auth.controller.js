@@ -95,9 +95,9 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         const token = jsonwebtoken_1.default.sign({ id: User._id, name: User.name, phone: User.phone }, SECRET_KEY);
         const _a = User._doc, { password } = _a, detail = __rest(_a, ["password"]);
         res
-            .cookie('access_token', token, {
-            domain: 'https://fyp-wsscm-system.vercel.app',
+            .cookie('wssc_token', token, {
             httpOnly: true,
+            secure: true, // Set this to true if using HTTPS
         })
             .status(200)
             .json(detail);
@@ -111,7 +111,7 @@ exports.SignIn = SignIn;
 const Logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         res
-            .clearCookie("access_token", {
+            .clearCookie("wssc_token", {
             sameSite: "none",
         })
             .status(200)

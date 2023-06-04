@@ -102,9 +102,9 @@ export const SignIn = async (
     const { password, ...detail } = User._doc;
 
     res
-      .cookie('access_token', token, {
-        domain: 'https://fyp-wsscm-system.vercel.app',
+      .cookie('wssc_token', token, {
         httpOnly: true,
+        secure: true, // Set this to true if using HTTPS
       })
       .status(200)
       .json(detail);
@@ -121,7 +121,7 @@ export const Logout = async (
 ) => {
   try {
     res
-      .clearCookie("access_token", {
+      .clearCookie("wssc_token", {
         sameSite: "none",
       })
       .status(200)

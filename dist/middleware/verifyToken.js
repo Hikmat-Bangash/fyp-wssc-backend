@@ -21,8 +21,7 @@ dotenv_1.default.config();
 const JWT = process.env.JWT_KEY;
 // ----- verify citizen token -------------
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.access_token;
-    console.log(`checking tokein: ${token}`);
+    const token = req.cookies.wssc_token;
     if (!token)
         return next((0, HandleError_1.createError)(401, "You are not authenticated!"));
     return new Promise((resolve, reject) => {
@@ -33,12 +32,6 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             resolve();
         });
     });
-    // jwt.verify(token, JWT, (err: jwt.VerifyErrors | null, user: any) => {
-    //     if (err) return next(createError(403, "Token is not valid!"));
-    //     req.citizen = user;
-    //     console.log(req.citizen)
-    //     next()
-    // });
 });
 exports.verifyToken = verifyToken;
 // ----- verifyUser before making any request --------
