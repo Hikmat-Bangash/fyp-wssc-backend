@@ -39,7 +39,9 @@ mongoose
 //-------- MIDDLEWARES ---------
 const corsOptions = {
   origin: 'https://fyp-wsscm-system.vercel.app',
+  credentials: true,
 };
+
 app.use(cors(corsOptions));
 
 
