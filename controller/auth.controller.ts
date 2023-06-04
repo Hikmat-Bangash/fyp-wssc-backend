@@ -104,7 +104,7 @@ export const SignIn = async (
     res
       .cookie('wssc_token', token, {
         httpOnly: true,
-        secure: true, // Set this to true if using HTTPS
+        // secure: true, // Set this to true if using HTTPS
       })
       .status(200)
       .json(detail);

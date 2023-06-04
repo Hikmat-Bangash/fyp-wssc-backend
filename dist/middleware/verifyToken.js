@@ -23,7 +23,6 @@ const JWT = process.env.JWT_KEY;
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.wssc_token;
     console.log(`token checking: ${token}`);
-    console.log(`req header: ${req.header}`);
     if (!token)
         return next((0, HandleError_1.createError)(401, "You are not authenticated!"));
     return new Promise((resolve, reject) => {

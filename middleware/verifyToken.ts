@@ -14,7 +14,6 @@ export const verifyToken = async (
 ) => {
   const token: any = req.cookies.wssc_token;
   console.log(`token checking: ${token}`)
-  console.log(`req header: ${req.header}`)
   
   if (!token) return next(createError(401, "You are not authenticated!"));
 

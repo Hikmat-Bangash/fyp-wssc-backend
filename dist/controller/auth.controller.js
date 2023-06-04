@@ -97,7 +97,7 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         res
             .cookie('wssc_token', token, {
             httpOnly: true,
-            secure: true, // Set this to true if using HTTPS
+            // secure: true, // Set this to true if using HTTPS
         })
             .status(200)
             .json(detail);
