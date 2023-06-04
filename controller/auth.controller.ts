@@ -103,7 +103,7 @@ export const SignIn = async (
 
     res
       .cookie('access_token', token, {
-        domain: 'fyp-wsscm-system.vercel.app',
+        domain: 'https://fyp-wsscm-system.vercel.app',
         httpOnly: true,
       })
       .status(200)

@@ -96,7 +96,7 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         const _a = User._doc, { password } = _a, detail = __rest(_a, ["password"]);
         res
             .cookie('access_token', token, {
-            domain: 'fyp-wsscm-system.vercel.app',
+            domain: 'https://fyp-wsscm-system.vercel.app',
             httpOnly: true,
         })
             .status(200)

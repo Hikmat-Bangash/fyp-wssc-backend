@@ -22,7 +22,7 @@ const JWT = process.env.JWT_KEY;
 // ----- verify citizen token -------------
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.access_token;
-    console.log(token);
+    console.log(`checking tokein: ${token}`);
     if (!token)
         return next((0, HandleError_1.createError)(401, "You are not authenticated!"));
     return new Promise((resolve, reject) => {
