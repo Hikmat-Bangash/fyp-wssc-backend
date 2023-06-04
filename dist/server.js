@@ -36,7 +36,7 @@ mongoose_1.default
     console.log(err);
 });
 const corsOptions = {
-    origin: ['https://fyp-wsscm-system.vercel.app', 'localhost:3000', 'localhost:3001'],
+    origin: ['https://fyp-wsscm-system.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));
