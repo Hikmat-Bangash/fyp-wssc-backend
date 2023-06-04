@@ -13,6 +13,7 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   const token: any = req.cookies.access_token;
+  console.log(token)
   if (!token) return next(createError(401, "You are not authenticated!"));
 
   return new Promise<void>((resolve, reject) => {

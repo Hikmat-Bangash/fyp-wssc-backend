@@ -143,8 +143,9 @@ export const GetAllComplaints = async (
   next: NextFunction
 ) => {
   const userId = req.user.id;
-  console.log(req.user.id == req.params.id);
+  console.log(`logged UserId: ${req.user.id} inside the all get complaints`)
   let allComplaints;
+  
   try {
     if (req.user.isAdmin) {
       allComplaints = await ComplaintModel.find().sort({ _id: -1 });

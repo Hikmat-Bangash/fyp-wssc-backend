@@ -128,7 +128,7 @@ exports.UpdateComplaint = UpdateComplaint;
 // Get All complaints
 const GetAllComplaints = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.id;
-    console.log(req.user.id == req.params.id);
+    console.log(`logged UserId: ${req.user.id} inside the all get complaints`);
     let allComplaints;
     try {
         if (req.user.isAdmin) {
