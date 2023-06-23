@@ -9,6 +9,7 @@ import {
   SignUp_validate,
 } from "../Schema_validation/Auth_Validation";
 import dotenv from "dotenv";
+import { AdminsModel } from "../Models/WsscsAdmin.schema";
 dotenv.config();
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
@@ -67,13 +68,13 @@ export const SignIn = async (
   // first we need to validate the data before saving it in DB
   const { error } = SignIn_validate(req.body);
   if (error) return res.send(error.details[0].message);
-
+  console.log(req.body)
   try {
     const User:
       | (ICitizen & {
-          _id: Types.ObjectId;
-          _doc: any;
-        })
+        _id: Types.ObjectId;
+        _doc: any;
+      })
       | null = await citizenModel.findOne({ phone: req.body.phone });
     if (!User)
       return res.status(404).json({
@@ -93,21 +94,34 @@ export const SignIn = async (
         success: false,
         message: "Password is incorrect",
       });
+
+    // Getting WSSC data which is associated with citizen
+    const WSSC: any = await AdminsModel.findOne({ WSSC_CODE: User?.WSSC_CODE });
+    console.log(WSSC)
+    const WSSC_DATA = {
+      fullname: WSSC?.fullname,
+      shortname: WSSC?.shortname,
+      logo: WSSC?.logo
+    }
     // if the user credential is okay then we assign/send jwt token for authentication and authorization
     const token: string = jwt.sign(
-      { id: User._id, name: User.name, phone: User.phone },
+      {
+        id: User._id,
+        name: User.name,
+        phone: User.phone,
+        WSSC_CODE: User.WSSC_CODE,
+      },
       SECRET_KEY
     );
 
     const { password, ...detail } = User._doc;
 
-    res
-      .cookie('wssc_token', token, {
-        httpOnly: true,
-        // secure: true, // Set this to true if using HTTPS
-      })
-      .status(200)
-      .json(detail);
+    // res
+    //   .cookie("access_token", token, {
+    //     httpOnly: true,
+    //   })
+      res.status(200)
+      .json({ success: true, status: 200, user: detail, WSSC: WSSC_DATA, token: token });
   } catch (error) {
     next(error);
   }

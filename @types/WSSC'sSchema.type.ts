@@ -1,5 +1,6 @@
 export interface WSSC_TYPES {
-    name: string;
+    fullname: string;
+    shortname: string;
     password: string;
     isAdmin: boolean;
     WSSC_CODE: string;
