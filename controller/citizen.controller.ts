@@ -12,7 +12,6 @@ export const UpdateUser = async (
 ) => {
   const userId: string = req.params.id;
   const citizenId: string = req.user.id;
-  console.log(req.body);
   if (userId == citizenId || req.user.isAdmin) {
     try {
       const updateInfo:
