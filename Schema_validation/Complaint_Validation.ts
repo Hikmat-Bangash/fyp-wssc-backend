@@ -19,6 +19,7 @@ export const ComplaintValidation = (
       .message("Only Numbers are allowed in phone Numbers"),
     
     complaintType: Joi.string(),
+    WSSC_CODE: Joi.string(),
 
     complaintAddress: Joi.string()
       .min(6)

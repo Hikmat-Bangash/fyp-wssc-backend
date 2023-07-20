@@ -82,14 +82,18 @@ export const RetreiveAllUsers = async (
   next: NextFunction
 ) => {
   try {
+
     // Only Admin can retrieve all the users data
-    const allUsers = await citizenModel.find().sort({ _id: -1 });
+    const code = req.user.WSSC_CODE;
+    const allUsers = await citizenModel
+      .find({ WSSC_CODE: code })
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       status: 200,
       success: true,
-      TotalUsers: allUsers.length,
-      data: { allUsers },
+      TotalUsers: allUsers.length, 
+      data: { allUsers }, 
     });
   } catch (error) {
     res.status(404).json({ status: 404, success: false, message: error });
@@ -152,8 +156,7 @@ export const ChangePassword = async (
     // encrypt password by using bcrypt algorithm
     const salt: string = bcrypt.genSaltSync(10);
     const HashedPassword: any = bcrypt.hashSync(req.body.password, salt);
-    console.log(HashedPassword);
-    console.log(req.body.password);
+
     try {
       await citizenModel.findByIdAndUpdate(
         userId,

@@ -19,9 +19,9 @@ const citizenSchema = new mongoose.Schema(
       type: String,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
+    WSSC_CODE: { type: String, required: [true, "WSSC code is required"] },
     address: { type: String },
     profile_image: { type: String },
-    isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

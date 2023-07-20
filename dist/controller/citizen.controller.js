@@ -86,7 +86,10 @@ exports.GetUser = GetUser;
 const RetreiveAllUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Only Admin can retrieve all the users data
-        const allUsers = yield citizen_schema_1.citizenModel.find().sort({ _id: -1 });
+        const code = req.user.WSSC_CODE;
+        const allUsers = yield citizen_schema_1.citizenModel
+            .find({ WSSC_CODE: code })
+            .sort({ updatedAt: -1 });
         res.status(200).json({
             status: 200,
             success: true,
@@ -148,8 +151,6 @@ const ChangePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         // encrypt password by using bcrypt algorithm
         const salt = bcryptjs_1.default.genSaltSync(10);
         const HashedPassword = bcryptjs_1.default.hashSync(req.body.password, salt);
-        console.log(HashedPassword);
-        console.log(req.body.password);
         try {
             yield citizen_schema_1.citizenModel.findByIdAndUpdate(userId, { password: HashedPassword }, {
                 new: true,

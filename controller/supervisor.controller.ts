@@ -3,17 +3,19 @@ import jwt from "jsonwebtoken";
 import { SupervisorModel } from "../Models/supervisor.schema";
 import { SupervisorTypes } from "../@types/supervisorSchema.type";
 import bycrypt from "bcryptjs";
+import { AdminsModel } from "../Models/WsscsAdmin.schema";
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const SECRET_KEY: any = process.env.JWT_KEY;
 
-// REGESTER SUPERVISOR
+// REGESTER SUPERVISOR CONTROLLER
 export const RegisterSupervisor = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { name, WSSC_CODE, phone, password } = req.body;
+  const WSSC_CODE = req.user.WSSC_CODE;
+  const { name, phone, password } = req.body;
 
   // ENCRYPTING PASSWORD
   const salt: string = bycrypt.genSaltSync(10);
@@ -22,8 +24,8 @@ export const RegisterSupervisor = async (
   try {
     const verifySupervisor:
       | (SupervisorTypes & {
-          _id: any;
-        })
+        _id: any;
+      })
       | null = await SupervisorModel.findOne({ phone });
 
     if (!verifySupervisor) {
@@ -34,9 +36,10 @@ export const RegisterSupervisor = async (
         password: hash,
       });
       await register.save();
-      res.status(200).json(register);
-    }
-    {
+      const { password, ...detail } = register._doc;
+
+      res.status(200).json(detail);
+    } else {
       res.status(400).json({
         status: 400,
         success: false,
@@ -52,19 +55,20 @@ export const RegisterSupervisor = async (
   }
 };
 
-// SIGN IN SUPERVISOR
+// SIGN IN SUPERVISOR CONTROLLER
 export const SignInSupervisor = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { phone, password } = req.body;
+  console.log(req.body);
   try {
     const verifySupervisor:
       | (SupervisorTypes & {
-          _id: any;
-          _doc: any;
-        })
+        _id: any;
+        _doc: any;
+      })
       | null = await SupervisorModel.findOne({ phone });
 
     // CHECKING IF THE SUPERVISOR EXISTS
@@ -77,7 +81,7 @@ export const SignInSupervisor = async (
     }
 
     const verifyPassword: boolean = await bycrypt.compare(
-      password,
+      req.body.password,
       verifySupervisor.password
     );
     // CHECKING IF THE PASSWORD IS CORRECT
@@ -88,22 +92,30 @@ export const SignInSupervisor = async (
         message: "Password is incorrect",
       });
 
-    const token: string = jwt.sign(
+    // Getting WSSC data which is associated with citizen
+    const WSSC: any = await AdminsModel.findOne({ WSSC_CODE: verifySupervisor?.WSSC_CODE });
+    const WSSC_DATA = {
+      fullname: WSSC.fullname,
+      shortname: WSSC.shortname,
+      logo: WSSC.logo
+    }
+
+    const supervisorToken: string = jwt.sign(
       {
         id: verifySupervisor._id,
-        phone: verifySupervisor.phone,
+        isSupervisor: true,
         WSSC_CODE: verifySupervisor.WSSC_CODE,
       },
       SECRET_KEY
     );
 
-    const supervisor = verifySupervisor._doc;
-    res
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json(supervisor);
+    const { password, ...supervisor } = verifySupervisor._doc;
+    // res
+    //   .cookie("access_token", supervisorToken, {
+    //     httpOnly: true,
+    //   })
+      res.status(200)
+      .json({ success: true, status: 200, supervisor: supervisor, WSSC: WSSC_DATA, supervisorToken });
   } catch (error) {
     next(error);
   }
@@ -119,9 +131,9 @@ export const GetSupervisor = async (
   try {
     const supervisor:
       | (SupervisorTypes & {
-          _id: any;
-          _doc: any;
-        })
+        _id: any;
+        _doc: any;
+      })
       | null = await SupervisorModel.findById(userId);
 
     res.status(200).json({
@@ -134,14 +146,68 @@ export const GetSupervisor = async (
   }
 };
 
+// UPDATE SUPERVISOR INFO CONTROLLER
+export const UpdateSupervisor = async (req: Request, res: Response) => {
+  const supervisorId: string = req.params.id;
+  console.log(supervisorId)
+  console.log(req.body)
+  try {
+    const supervisor = await SupervisorModel.findByIdAndUpdate(
+      supervisorId,
+      req.body,
+      { new: true }
+    );
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "Supervisor info Updated Successfully",
+      data: supervisor,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      success: false,
+      message: error,
+    });
+  }
+};
+
+// DELETING SUPERVISOR
+export const DeleteSupervisor = async (req: Request, res: Response) => {
+  const supervisorId: string = req.params.id;
+
+  try {
+    await SupervisorModel.findByIdAndUpdate(supervisorId, {
+      $set: { isDeleted: true },
+    });
+    res.status(200)
+      .json({
+        status: 200,
+        success: true,
+        message: "Supervisor Deleted Successfully",
+      });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      success: false,
+      message: error,
+    });
+  }
+};
+
 // GET ALL SUPERVISORS
 export const GetAllSupervisors = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+
   try {
-    const allSupervisors = await SupervisorModel.find().sort({ _id: -1 });
+    const allSupervisors = await SupervisorModel.find({
+      WSSC_CODE: req.user.WSSC_CODE,
+      isDeleted: false,
+    }).sort({ updatedAt: -1 });
 
     res.status(200).json({
       status: 200,
@@ -151,5 +217,29 @@ export const GetAllSupervisors = async (
     });
   } catch (error) {
     res.status(404).json({ status: 404, success: false, message: error });
+  }
+};
+
+
+// In case of logout, we remove or deleted jwt token from user machine.
+export const Logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    console.log("inside try section")
+    res.status(200)
+      .json({
+        status: 200,
+        success: true,
+        message: "Supervisor Signed Out Successfully",
+      });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      success: false,
+      message: error,
+    });
   }
 };
